@@ -24,13 +24,12 @@ function LoginScreen({ navigation }) {
   return (
     <View style={styles.container}>
        <img src="header.png"/>
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>Iniciar Sesion</Text>
       <TextInput placeholder="Usuario" style={styles.input} onChangeText={setUsername} />
       <TextInput placeholder="Contraseña" secureTextEntry style={styles.input} onChangeText={setPassword} />
-      <Button title="Iniciar sesión" backgroundcolor="brown" onPress={handleLogin} />
-      document.write('<hr/>');
+      <Button title="Iniciar sesión" backgroundcolor="#C4AE95" onPress={handleLogin} />
       <Text> ¿Nuevo en Libropedia? </Text>
-      <Button title="Registrarse" backgroundcolor="brown" onPress={() => navigation.navigate('Registro')} />
+      <Button title="Registrarse" backgroundcolor="#C4AE95" onPress={() => navigation.navigate('Registro')} />
     </View>
   );
 }
@@ -58,7 +57,7 @@ function RegisterScreen({ navigation }) {
       <Text style={styles.title}>Registro</Text>
       <TextInput placeholder="Usuario" style={styles.input} onChangeText={setUsername} />
       <TextInput placeholder="Contraseña" secureTextEntry style={styles.input} onChangeText={setPassword} />
-      <Button title="Registrarse" backgroundcolor="brown" onPress={handleRegister} />
+      <Button title="Registrarse" backgroundcolor="#C4AE95" onPress={handleRegister} />
     </View>
   );
 }
