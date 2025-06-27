@@ -61,6 +61,38 @@ function RegisterScreen({ navigation }) {
     </View>
   );
 }
+function RecuperarContraseñaScreen({ navigation }) {
+  const [email, setEmail] = React.useState('');
+
+  const handleRecover = async () => {
+    const response = await fetch('http://<10.10.0.66>:5000/recover-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await response.json();
+    if (response.ok) {
+      Alert.alert('Revisa tu correo', data.message);
+      navigation.navigate('Login');
+    } else {
+      Alert.alert('Error', data.message);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Image source={require('./assets/header.png')} style={styles.headerImage} />
+      <Text style={styles.title}>Recuperar Contraseña</Text>
+      <TextInput
+        placeholder="Correo electrónico"
+        style={styles.input}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+      />
+      <Button title="Enviar" color="#C4AE95" onPress={handleRecover} />
+    </View>
+  );
+}
 export default function App() {
   return (
     <NavigationContainer>
