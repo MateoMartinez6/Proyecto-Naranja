@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "977205378491",
+    "project_id": "libropedia-33392",
+    "storage_bucket": "libropedia-33392.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:977205378491:android:1d729a1f208b7d8f8e589e",
+        "android_client_info": {
+          "package_name": "LIbropedia.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDM0EXOOKj9GcMNWQRWRy6th3D0RATRbDA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
