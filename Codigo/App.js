@@ -26,7 +26,10 @@ function LoginScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Image source={require('./assets/header.png')} style={styles.headerImage} />
+      
+
+
+
       <Text style={styles.title}>Ingresar</Text>
       <TextInput placeholder="Usuario" style={styles.input} onChangeText={setUsername} />
       <TextInput placeholder="Contraseña" secureTextEntry style={styles.input} onChangeText={setPassword} />
@@ -62,7 +65,9 @@ function RegisterScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Image source={require('./assets/header.png')} style={styles.headerImage} />
+      
+
+
       <Text style={styles.title}>Registro</Text>
       <TextInput placeholder="Usuario" style={styles.input} onChangeText={setUsername} />
       <TextInput placeholder="Correo electrónico" style={styles.input} onChangeText={setEmail} />
@@ -93,7 +98,7 @@ function RecuperarContraseñaScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Image source={require('./assets/header.png')} style={styles.headerImage} />
+      
       <Text style={styles.title}>Recuperar Contraseña</Text>
       <TextInput
         placeholder="Correo electrónico"
