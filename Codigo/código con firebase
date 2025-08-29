@@ -1,0 +1,177 @@
+import React from "react";
+import { StatusBar } from "expo-status-bar";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { View, Text, TextInput, Button, StyleSheet, Alert, Image, Pressable, FlatList, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons"; // <= instala con: expo install @expo/vector-icons
+
+// Importar Firebase
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { app, db } from "Libropedia/src/config/firebase-config.js";
+const auth = getAuth(app);
+
+const Stack = createNativeStackNavigator();
+
+function LoginScreen({ navigation }) {
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+
+  const handleLogin = async () => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      Alert.alert("Bienvenido", "Sesión iniciada correctamente");
+      navigation.replace("Principal"); // redirige a la pantalla principal
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Ingresar</Text>
+      <TextInput placeholder="Correo electrónico" style={styles.input} onChangeText={setEmail} />
+      <TextInput placeholder="Contraseña" secureTextEntry style={styles.input} onChangeText={setPassword} />
+      <Text style={styles.linkText} onPress={() => navigation.navigate("RecuperarContraseña")}> Recuperar Contraseña </Text>
+      <Pressable style={styles.buttons} onPress={handleLogin}> 
+        <Text style={styles.buttonText}>Iniciar Sesión</Text>
+      </Pressable>
+      <View style={styles.divider}/>
+      <Text style={styles.subtitle}>¿Nuevo en Libropedia?</Text>
+      <Pressable style={styles.buttons} onPress={() => navigation.navigate("Registro")}> 
+        <Text style={styles.buttonText}>Registrarse</Text> 
+      </Pressable>
+    </View>
+  );
+}
+
+function RegisterScreen({ navigation }) {
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+
+  const handleRegister = async () => {
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      Alert.alert("Registro exitoso", "Ya puedes iniciar sesión");
+      navigation.navigate('Login');
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Registro</Text>
+      <TextInput placeholder="Correo electrónico" style={styles.input} onChangeText={setEmail} />
+      <TextInput placeholder="Contraseña" secureTextEntry style={styles.input} onChangeText={setPassword} />
+      <Text style={styles.advert}>ⓘ La contraseña debe tener mínimo 6 dígitos.</Text>
+      <Pressable style={styles.buttons} onPress={handleRegister}> 
+        <Text style={styles.buttonText}>Registrarse</Text> 
+      </Pressable>
+    </View>
+  );
+}
+
+function RecuperarContraseñaScreen({ navigation }) {
+  const [email, setEmail] = React.useState('');
+
+  const handleRecover = async () => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      Alert.alert("Revisa tu correo", "Se envió un enlace para restablecer tu contraseña");
+      navigation.navigate("Login");
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Recuperar Contraseña</Text>
+      <TextInput
+        placeholder="Correo electrónico"
+        style={styles.input}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+      />
+      <Button title="Enviar" color="#C4AE95" onPress={handleRecover} />
+    </View>
+  );
+}
+
+// Pantalla Principal
+function PrincipalScreen() {
+  const libros = [
+    { id: '1', titulo: 'La Asistenta', portada: '' },
+    { id: '2', titulo: 'El Puente', portada: '' },
+    { id: '3', titulo: 'Siempre nos quedará el verano', portada: '' },
+    { id: '4', titulo: 'Reino de Sombras', portada: '' },
+  ];
+
+  return (
+    <View style={{ flex: 1, backgroundColor: "white" }}>
+      {/* Barra superior */}
+      <View style={{ flexDirection: "row", justifyContent: "center", padding: 12, backgroundColor: "#d9c1a5" }}>
+        <Text style={{ fontSize: 16, fontWeight: "bold", marginHorizontal: 4 }}>Libros</Text>
+        <Text style={{ fontSize: 16, fontWeight: "bold", marginHorizontal: 4 }}>| Comics</Text>
+        <Text style={{ fontSize: 16, fontWeight: "bold", marginHorizontal: 4 }}>| Manga</Text>
+      </View>
+
+      {/* Filtros */}
+      <Text style={{ fontSize: 16, fontWeight: "600", marginLeft: 15, marginTop: 10 }}>Filtros</Text>
+      <Text style={{ fontSize: 16, fontWeight: "600", marginLeft: 15, marginTop: 5 }}>Más recientes</Text>
+
+      {/* Grid de libros */}
+      <FlatList
+        data={libros}
+        keyExtractor={(item) => item.id}
+        numColumns={2}
+        contentContainerStyle={{ paddingHorizontal: 10, marginTop: 10 }}
+        renderItem={({ item }) => (
+          <View style={{ flex: 1, alignItems: "center", margin: 8 }}>
+            <Image source={{ uri: item.portada }} style={{ width: 150, height: 220, borderRadius: 8 }} />
+            <Text style={{ marginTop: 6, fontSize: 14, fontWeight: "500" }}>{item.titulo}</Text>
+          </View>
+        )}
+      />
+
+      {/* Barra inferior */}
+      <View style={{ flexDirection: "row", justifyContent: "space-around", backgroundColor: "#d9c1a5", padding: 12 }}>
+        <TouchableOpacity>
+          <Ionicons name="home" size={28} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Ionicons name="person" size={28} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Ionicons name="menu" size={28} color="white" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Registro" component={RegisterScreen} />
+        <Stack.Screen name="RecuperarContraseña" component={RecuperarContraseñaScreen} />
+        <Stack.Screen name="Principal" component={PrincipalScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+const styles = StyleSheet.create({
+container: { flex: 1, justifyContent: 'center', padding: 20 },
+input: { borderWidth: 1, marginBottom: 10, padding: 8, borderRadius: 40 },
+title: { fontSize: 18, marginBottom: 20, textAlign: 'left' },
+headerImage: { width: 350, height: 100, alignSelf: 'center', marginBottom: 20 },
+linkText: { color: "#000000", textDecorationLine: 'underline', marginBottom: 10, textAlign: 'right' },
+subtitle: { textAlign: "center" },
+buttons: { backgroundColor: "#4E342E", paddingVertical: 12, paddingHorizontal: 20, borderRadius: 5, marginVertical: 10, alignItems: "center", justifyContent: "center" },
+buttonText: { color: "#ffffff", fontSize: 16 },
+divider: { height: 1, width: "100%", marginVertical: 20, backgroundColor: "#000000" },
+advert: { fontSize: 12, color: "#a9a9a9" }
+});
