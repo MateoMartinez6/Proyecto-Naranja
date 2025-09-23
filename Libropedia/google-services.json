@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "103020737380",
+    "firebase_url": "https://libropedia-f69f8-default-rtdb.firebaseio.com",
+    "project_id": "libropedia-f69f8",
+    "storage_bucket": "libropedia-f69f8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:103020737380:android:ef1199a77261f52cfd8071",
+        "android_client_info": {
+          "package_name": "com.citrik.libropedia"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtC2wTrNHLc7aCW-cj2Ksg2q2RPQApHZs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
