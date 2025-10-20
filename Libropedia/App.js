@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { ref, onValue, push } from 'firebase/database';
+import auth from '@react-native-firebase/auth';
 import { db } from './.expo/src/config/firebaseconfig.js'; // Tu configuración de Firebase
 
 const Stack = createNativeStackNavigator();
@@ -99,6 +100,7 @@ function RegisterScreen({ navigation }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
 
  /* const handleRegister = async () => {
     try {
@@ -120,35 +122,100 @@ function RegisterScreen({ navigation }) {
   };*/
 
     const handleRegister = async () => {
-    try {
-      const usuariosRef = ref(db, "Usuarios");
-      onValue(usuariosRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          const usuariosArray = Object.values(data).filter((item) => item == null);
-          const adaptado = usuariosArray.map((user, index) => ({
-            id: index.toString(),
-            Apodo: user.Apodo,
-            pass: user.Contraseña, 
-            correo: user.mail
-          }));
+      if (!username.trim() || !email.trim() || !password.trim()) {
+        Alert.alert('Error', 'Por favor completa todos los campos');
+        return;
+      }
+  
+      if (password.length < 6) {
+        Alert.alert('Error', 'La contraseña debe tener al menos 6 caracteres');
+        return;
+      }
+  
+      setLoading(true);
+      /*try {
+        const usuariosRef = ref(db, "Usuarios");
+        onValue(usuariosRef, (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            const usuariosArray = Object.values(data).filter((item) => item == null);
+            const adaptado = usuariosArray.map((user, index) => ({
+              id: index.toString(),
+              Apodo: user.Apodo,
+              pass: user.Contraseña, 
+              correo: user.mail
+            }));
 
-          const usuarioNoEncontrado = adaptado.set(
-            (user) => user.Apodo === username && user.pass === password && user.correo === email
-          );
-          
-          if (usuarioNoEncontrado) {
-            Alert.alert('Bienvenido', "todo salio bien");
-          } else {
-            Alert.alert('Error', "todo salio bien pero, user o pass incorrectas");
+            const usuarioNoEncontrado = adaptado.set(
+              (user) => user.Apodo === username && user.pass === password && user.correo === email
+            );
+            
+            if (usuarioNoEncontrado) {
+              Alert.alert('Bienvenido', "todo salio bien");
+            } else {
+              Alert.alert('Error', "todo salio bien pero, user o pass incorrectas");
+            }
           }
+        });
+      } catch (e) {
+        Alert.alert('Error de red', 'No se pudo conectar con el servidor.');
+      }*/
+        try {
+          // 1. Crear usuario en Firebase Authentication
+          const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+    
+          const userId = userCredential.user.uid;
+    
+          // 2. Guardar datos adicionales en Realtime Database
+          await set(ref(database, `users/${userId}`), {
+            username: username.trim(),
+            email: email.trim(),
+            createdAt: serverTimestamp(),
+          });
+    
+          // 3. Actualizar el perfil del usuario con el nombre
+          await updateProfile(userCredential.user, {
+            displayName: username.trim(),
+          });
+    
+          Alert.alert(
+            'Éxito',
+            'Cuenta creada exitosamente',
+            [
+              {
+                text: 'OK',
+                onPress: () => {
+                  // Navega a tu pantalla principal
+                  // navigation.replace('Home');
+                  console.log('Usuario registrado exitosamente');
+                },
+              },
+            ]
+          );
+        } catch (error) {
+          console.error('Error al registrar:', error);
+          
+          let errorMessage = 'Ocurrió un error al crear la cuenta';
+          
+          if (error.code === 'auth/email-already-in-use') {
+            errorMessage = 'Este correo ya está registrado';
+          } else if (error.code === 'auth/invalid-email') {
+            errorMessage = 'El correo electrónico no es válido';
+          } else if (error.code === 'auth/weak-password') {
+            errorMessage = 'La contraseña es muy débil';
+          }
+          
+          Alert.alert('Error', errorMessage);
+        } finally {
+          setLoading(false);
         }
-      });
-    } catch (e) {
-      Alert.alert('Error de red', 'No se pudo conectar con el servidor.');
-    }
+      };
 
-  };
+
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: PALETTE.paper }}>
