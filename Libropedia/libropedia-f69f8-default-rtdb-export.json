@@ -10,7 +10,8 @@
         "Audiolibro"
       ],
       "Sinopsis": "A",
-      "Titulo": "La Asistenta"
+      "Titulo": "La Asistenta",
+      "cover": "https://github.com/MateoMartinez6/Proyecto-Naranja/blob/main/Documentacion/assets/asistenta.jpeg"
     },
     {
       "Cantidad de Paginas": "",
@@ -55,15 +56,35 @@
       "Nombre": "Favoritos"
     }
   ],
-  "Reseñas": [
-    null,
-    {
+  "Reseñas": {
+    "1": {
       "ID Usuario": 1,
       "Libro Finalizado": true,
       "Valoracion": 4,
       "contenido": "Muy bueno......"
+    },
+    "-OafuDK5wA1OupRNVGrA": {
+      "ID Libro": "3",
+      "ID Usuario": 1,
+      "Libro Finalizado": true,
+      "Valoracion": 4,
+      "contenido": "Bastante bueno, pero podria ser mejor"
+    },
+    "-OboCwaGpXOqrfDTI7eR": {
+      "ID Libro": "3",
+      "ID Usuario": 1,
+      "Libro Finalizado": true,
+      "Valoracion": 3,
+      "contenido": "Me gustó"
+    },
+    "-Oc7cEN3gjYqB3nA_qjR": {
+      "ID Libro": "0",
+      "ID Usuario": 1,
+      "Libro Finalizado": true,
+      "Valoracion": 5,
+      "contenido": "muy bueno"
     }
-  ],
+  },
   "Usuarios": [
     null,
     {
