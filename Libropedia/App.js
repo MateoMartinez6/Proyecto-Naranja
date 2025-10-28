@@ -18,8 +18,9 @@ import {
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { ref, onValue, push } from 'firebase/database';
-import auth from '@react-native-firebase/auth';
+import { getAuth, createUserWithEmailAndPassword} from "firebase/auth";
 import { db } from './.expo/src/config/firebaseconfig.js'; // Tu configuración de Firebase
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -39,7 +40,8 @@ const CARD_W = (w - GRID_PADDING * 2 - GRID_GAP) / 2;
 const COVER_H = CARD_W * 1.45;
 
 // -------------------- LOGIN --------------------
-function LoginScreen({ navigation }) {
+export default function LoginScreen({ navigation }) {
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -97,124 +99,20 @@ function LoginScreen({ navigation }) {
 
 // -------------------- REGISTRO --------------------
 function RegisterScreen({ navigation }) {
-  const [username, setUsername] = useState('');
+  const [user, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
 
- /* const handleRegister = async () => {
-    try {
-      const response = await fetch("https://libropedia-f69f8-default-rtdb.firebaseio.com", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password, email }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        Alert.alert("Registro exitoso", data.message);
-        navigation.navigate("Login");
-      } else {
-        Alert.alert("Error", data.message);
-      }
-    } catch (e) {
-      Alert.alert("Error de red", "No se pudo conectar con el servidor.");
-    }
-  };*/
 
-    const handleRegister = async () => {
-      if (!username.trim() || !email.trim() || !password.trim()) {
-        Alert.alert('Error', 'Por favor completa todos los campos');
-        return;
-      }
-  
-      if (password.length < 6) {
-        Alert.alert('Error', 'La contraseña debe tener al menos 6 caracteres');
-        return;
-      }
-  
-      setLoading(true);
-      /*try {
-        const usuariosRef = ref(db, "Usuarios");
-        onValue(usuariosRef, (snapshot) => {
-          const data = snapshot.val();
-          if (data) {
-            const usuariosArray = Object.values(data).filter((item) => item == null);
-            const adaptado = usuariosArray.map((user, index) => ({
-              id: index.toString(),
-              Apodo: user.Apodo,
-              pass: user.Contraseña, 
-              correo: user.mail
-            }));
 
-            const usuarioNoEncontrado = adaptado.set(
-              (user) => user.Apodo === username && user.pass === password && user.correo === email
-            );
-            
-            if (usuarioNoEncontrado) {
-              Alert.alert('Bienvenido', "todo salio bien");
-            } else {
-              Alert.alert('Error', "todo salio bien pero, user o pass incorrectas");
-            }
-          }
-        });
-      } catch (e) {
-        Alert.alert('Error de red', 'No se pudo conectar con el servidor.');
-      }*/
-        try {
-          // 1. Crear usuario en Firebase Authentication
-          const userCredential = await createUserWithEmailAndPassword(
-            auth,
-            email,
-            password
-          );
-    
-          const userId = userCredential.user.uid;
-    
-          // 2. Guardar datos adicionales en Realtime Database
-          await set(ref(database, `users/${userId}`), {
-            username: username.trim(),
-            email: email.trim(),
-            createdAt: serverTimestamp(),
-          });
-    
-          // 3. Actualizar el perfil del usuario con el nombre
-          await updateProfile(userCredential.user, {
-            displayName: username.trim(),
-          });
-    
-          Alert.alert(
-            'Éxito',
-            'Cuenta creada exitosamente',
-            [
-              {
-                text: 'OK',
-                onPress: () => {
-                  // Navega a tu pantalla principal
-                  // navigation.replace('Home');
-                  console.log('Usuario registrado exitosamente');
-                },
-              },
-            ]
-          );
-        } catch (error) {
-          console.error('Error al registrar:', error);
-          
-          let errorMessage = 'Ocurrió un error al crear la cuenta';
-          
-          if (error.code === 'auth/email-already-in-use') {
-            errorMessage = 'Este correo ya está registrado';
-          } else if (error.code === 'auth/invalid-email') {
-            errorMessage = 'El correo electrónico no es válido';
-          } else if (error.code === 'auth/weak-password') {
-            errorMessage = 'La contraseña es muy débil';
-          }
-          
-          Alert.alert('Error', errorMessage);
-        } finally {
-          setLoading(false);
-        }
-      };
-
+  const auth = createUserWithEmailAndPassword(auth, email, password)
+  .then((userCredentuial) => {
+    const user = userCredentuial.user;
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+  })
 
 
   return (
@@ -225,7 +123,7 @@ function RegisterScreen({ navigation }) {
         <TextInput placeholder="Correo electrónico" style={styles.input} onChangeText={setEmail} />
         <TextInput placeholder="Contraseña" secureTextEntry style={styles.input} onChangeText={setPassword} />
         <Text style={styles.advert}>ⓘ La contraseña debe tener mínimo 6 dígitos.</Text>
-        <Pressable style={styles.buttons} onPress={handleRegister}>
+        <Pressable style={styles.buttons} onPress={RegisterScreen}>
           <Text style={styles.buttonText}>Registrarse</Text>
         </Pressable>
       </View>
@@ -288,7 +186,7 @@ function HomeScreen({ navigation }) {
           id: index.toString(),
           titulo: libro.Titulo || "Sin título",
           autor: libro.Autor || "Autor desconocido",
-          cover: libro.cover || "https://via.placeholder.com/150",
+          cover: libro.cover || "https://drive.google.com/uc?export=view&id=1rZieForpqFPVmlB09APq-jC1r33gaA0Y",
           paginas: libro["Cantidad de Paginas"] || "",
           sinopsis: libro.Sinopsis || "",
         }));
@@ -356,24 +254,63 @@ function DetalleLibroScreen({ route, navigation }) {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-      <ScrollView contentContainerStyle={{ padding: 20 }}>
-        <Image source={{ uri: libro.cover }} style={{ width: 200, height: 300, borderRadius: 8, marginBottom: 16 }} />
-        <Text style={{ fontSize: 22, fontWeight: "bold" }}>{libro.titulo}</Text>
+      <ScrollView contentContainerStyle={{ padding: 20, alignItems: "center" }}>
+        {/* 🔹 Imagen del libro */}
+        <Image
+          source={{
+            uri: libro.cover
+
+          }}
+          style={{
+            width: 200,
+            height: 300,
+            borderRadius: 8,
+            marginBottom: 16,
+            backgroundColor: "#eee",
+          }}
+          resizeMode="cover"
+        />
+
+        {/* 🔹 Datos del libro */}
+        <Text style={{ fontSize: 22, fontWeight: "bold", textAlign: "center" }}>{libro.titulo}</Text>
         <Text style={{ fontSize: 16, marginTop: 4 }}>Autor: {libro.autor}</Text>
         <Text style={{ fontSize: 16, marginTop: 4 }}>Páginas: {libro.paginas}</Text>
-        <Text style={{ marginTop: 12 }}>{libro.sinopsis}</Text>
+        <Text style={{ marginTop: 12, textAlign: "justify" }}>{libro.sinopsis}</Text>
 
+        {/* 🔹 Botón para escribir reseña */}
         <Pressable
-          style={{ backgroundColor: "#4E342E", padding: 12, borderRadius: 8, marginTop: 16, alignItems: "center" }}
+          style={{
+            backgroundColor: "#4E342E",
+            padding: 12,
+            borderRadius: 8,
+            marginTop: 16,
+            alignItems: "center",
+            width: "100%",
+          }}
           onPress={() => navigation.navigate("ResenaScreen", { libro, usuarioId: 1 })}
         >
-          <Text style={{ color: "#fff" }}>Escribir reseña</Text>
+          <Text style={{ color: "#fff", fontWeight: "bold" }}>Escribir reseña</Text>
         </Pressable>
 
-        <Text style={{ fontSize: 18, fontWeight: "bold", marginTop: 24 }}>Reseñas</Text>
+        {/* 🔹 Sección de reseñas */}
+        <Text style={{ fontSize: 18, fontWeight: "bold", marginTop: 24, alignSelf: "flex-start" }}>
+          Reseñas
+        </Text>
+
         {resenas.length === 0 && <Text style={{ marginTop: 8 }}>Aún no hay reseñas.</Text>}
+
         {resenas.map((r, index) => (
-          <View key={index} style={{ marginTop: 12, padding: 12, borderWidth: 1, borderRadius: 8, borderColor: "#ccc" }}>
+          <View
+            key={index}
+            style={{
+              marginTop: 12,
+              padding: 12,
+              borderWidth: 1,
+              borderRadius: 8,
+              borderColor: "#ccc",
+              width: "100%",
+            }}
+          >
             <Text style={{ fontWeight: "bold" }}>Usuario: {r["ID Usuario"]}</Text>
             <Text>Valoración: {r.Valoracion} ⭐</Text>
             <Text style={{ marginTop: 4 }}>{r.contenido}</Text>
