@@ -40,7 +40,7 @@ const CARD_W = (w - GRID_PADDING * 2 - GRID_GAP) / 2;
 const COVER_H = CARD_W * 1.45;
 
 // -------------------- LOGIN --------------------
-export default function LoginScreen({ navigation }) {
+ function LoginScreen({ navigation }) {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -65,7 +65,7 @@ export default function LoginScreen({ navigation }) {
           if (usuarioEncontrado) {
             Alert.alert('Bienvenido', "todo salio bien");
           } else {
-            Alert.alert('Error', "todo salio bien pero, user o pass incorrectas");
+            Alert.alert('Error', "Usuario o contraseña incorrectas");
           }
         }
       });
@@ -102,17 +102,40 @@ function RegisterScreen({ navigation }) {
   const [user, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
+  const handleRegister = async () => {
+    const auth = getAuth();
+    try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    navigation.navigate('Login');
+    const usuariosRef = ref(db, "Usuarios");
+      onValue(usuariosRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          const usuariosArray = Object.values(data).filter((item) => item == null);
+          const adaptado = usuariosArray.map((user, index) => ({
+            id: index.toString(),
+            Apodo: user.Apodo,
+            correo: user.mail,
+            pass: user.Contraseña 
+          }));
+        }
+        Alert.alert('Éxito', 'Usuario registrado correctamente');
+    });
+    } catch (error) {
+    Alert.alert('Error', error.message);
+    }
+  };
 
 
 
-  const auth = createUserWithEmailAndPassword(auth, email, password)
+  /*const auth = createUserWithEmailAndPassword(auth, email, password)
   .then((userCredentuial) => {
     const user = userCredentuial.user;
   })
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
-  })
+  })*/
 
 
   return (
@@ -123,7 +146,7 @@ function RegisterScreen({ navigation }) {
         <TextInput placeholder="Correo electrónico" style={styles.input} onChangeText={setEmail} />
         <TextInput placeholder="Contraseña" secureTextEntry style={styles.input} onChangeText={setPassword} />
         <Text style={styles.advert}>ⓘ La contraseña debe tener mínimo 6 dígitos.</Text>
-        <Pressable style={styles.buttons} onPress={RegisterScreen}>
+        <Pressable style={styles.buttons} onPress={handleRegister}>
           <Text style={styles.buttonText}>Registrarse</Text>
         </Pressable>
       </View>
@@ -131,7 +154,7 @@ function RegisterScreen({ navigation }) {
   );
 }
 
-// -------------------- RECUPERAR CONTRASEÑA --------------------
+// -------------------- RECUPERAR CONTextTRASEÑA --------------------
 function RecuperarContraseñaScreen({ navigation }) {
   const [email, setEmail] = useState('');
 
@@ -186,7 +209,7 @@ function HomeScreen({ navigation }) {
           id: index.toString(),
           titulo: libro.Titulo || "Sin título",
           autor: libro.Autor || "Autor desconocido",
-          cover: libro.cover || "https://drive.google.com/uc?export=view&id=1rZieForpqFPVmlB09APq-jC1r33gaA0Y",
+          cover: libro.cover || "https://github.com/MateoMartinez6/Proyecto-Naranja/blob/main/Documentacion/assets/asistenta.jpeg",
           paginas: libro["Cantidad de Paginas"] || "",
           sinopsis: libro.Sinopsis || "",
         }));
@@ -214,11 +237,8 @@ function HomeScreen({ navigation }) {
         <Text style={styles.topBarText}>Libros | Comics | Manga</Text>
       </View>
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
-        <View style={{ paddingHorizontal: GRID_PADDING, paddingTop: 16 }}>
-          <Text style={styles.sectionHeader}>Filtros</Text>
-          <Text style={[styles.sectionHeader, { marginTop: 8 }]}>Más Recientes</Text>
-        </View>
+     <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
+        
 
         <FlatList
           data={libros}
@@ -333,20 +353,7 @@ function MasScreen({ route, navigation }) {
           Libropedia
         </Text>
 
-        <Pressable
-          style={{
-            padding: 16,
-            borderBottomWidth: 1,
-            borderColor: "#ccc",
-            flexDirection: "row",
-            alignItems: "center"
-          }}
-          onPress={() => navigation.navigate("Mas")} // o a donde quieras llevar
-        >
-          <Ionicons name="settings-outline" size={20} color="#000" style={{ marginRight: 8 }} />
-          <Text style={{ fontSize: 16 }}>Configuración Cuenta</Text>
-        </Pressable>
-
+        
         <Pressable
           style={{
             padding: 16,
@@ -640,13 +647,14 @@ const styles = StyleSheet.create({
   },
 
   tabButton: {
-    width: 44,
-    height: 44,
+    width: 35,
+    height: 35,
     borderRadius: 22,
     backgroundColor: PALETTE.brown,
     alignItems: "center",
     justifyContent: "center",
   },
+});
 
   
 });
