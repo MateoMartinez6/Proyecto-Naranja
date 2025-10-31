@@ -233,13 +233,22 @@ function HomeScreen({ navigation }) {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: PALETTE.paper }}>
       <StatusBar style="dark" />
+      
+
       <View style={styles.topBar}>
+        <Text style={{ 
+          fontSize: 30, 
+          fontWeight: "bold", 
+          textAlign: "center", 
+          marginTop: "5%",
+        }}>
+          Libropedia
+        </Text>
         <Text style={styles.topBarText}>Libros | Comics | Manga</Text>
       </View>
 
      <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
         
-
         <FlatList
           data={libros}
           keyExtractor={(item) => item.id}
@@ -371,7 +380,7 @@ function MasScreen({ route, navigation }) {
     </SafeAreaView>
   )}
 
-
+// -------------------- CONFIGURACION DE CUENTA --------------------
   function ConfigCuentaScreen({route, navigation}) {
   const [nuevoUsuario, setNuevoUsuario] = useState("");
   const [actualPass, setActualPass] = useState("");
@@ -653,8 +662,6 @@ const styles = StyleSheet.create({
     backgroundColor: PALETTE.brown,
     alignItems: "center",
     justifyContent: "center",
+    marginTop: "25%",
   },
-});
-
-  
 });
